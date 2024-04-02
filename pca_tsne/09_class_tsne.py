@@ -1,4 +1,4 @@
-#T-SNE by ARCHITECTURE
+#T-SNE by CLASS
 
 import pandas as pd
 import numpy as np
@@ -94,12 +94,12 @@ class Logger(object):
     def flush(self):
         pass
 
-path_to_log_file = os.path.join(base_save_folder, "by_arch", "top_log_tsne.txt")
+path_to_log_file = os.path.join(base_save_folder, "by_class", "class_log_tsne.txt")
 original_stdout = sys.stdout
 sys.stdout = Logger(path_to_log_file)
 
 print("--------------------------------\n")
-print("----- t-SNE by Topology ----\n")
+print("-------- t-SNE by CLASS --------\n")
 
 # ---------------------------------------------------------------------------------------------------
 # Add the architecture name to df
@@ -261,58 +261,48 @@ df_processed = process_data(df_labelled, normalise_columns, destress_columns)
 print(f"Total number of processed structures: {len(df_processed)}\n")
 
 # ---------------------------------------------------------------------------------------------------
-# TSNE TOPOLOGY by HOMOLOGOUS SUPERFAMILY
+# TSNE CLASS by ARCHITECTURE
 
 n_components = 2 
-perplexity = 4
+perplexity = 100
 learning_rate = 800
 n_iter = 3000
 random_state = 42
 
-for top_name in df_processed['top_description'].unique():
-    df_top_processed = df_processed[df_processed['top_description'] == top_name]
+for class_name in df_processed['class_description'].unique():
+    df_class_processed = df_processed[df_processed['class_description'] == class_name].copy()
 
     print("--------------------------------\n")
-    print(f"{top_name}:\n")
-    if df_top_processed.shape[0] <= perplexity:
-        print(f"\tNot enough data for t-SNE on {top_name}. Skipping...")
-        continue
+    print(f"{class_name}:\n")
     print("--------------------------------\n")
     
-    unsanitised_top_name = top_name
-    top_name = top_name.replace(' ', '_').replace('/', '_')
+    # Plotting
+    class_save_folder = os.path.join(base_save_folder, "by_class", f"class_{class_name.replace(' ', '_')}")
+    if not os.path.exists(class_save_folder):
+        os.makedirs(class_save_folder)
 
-    top_save_folder = os.path.join(base_save_folder, "by_top", f"top_{top_name.replace(' ', '_')}")
-    if not os.path.exists(top_save_folder):
-        os.makedirs(top_save_folder)
-
-    numeric_destress_columns = [col for col in destress_columns if col in df_top_processed.columns and np.issubdtype(df_top_processed[col].dtype, np.number)]
-    df_top_numeric = df_top_processed[numeric_destress_columns].dropna()
+    # Select only destress columns that are numeric
+    numeric_destress_columns = [col for col in destress_columns if col in df_class_processed.columns and np.issubdtype(df_class_processed[col].dtype, np.number)]
+    df_class_numeric = df_class_processed[numeric_destress_columns].dropna()
 
     # t-SNE
-    if df_top_numeric.shape[0] > 1 and df_top_numeric.shape[1] > 1:
-        tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=n_iter, random_state=random_state)
-        tsne_results = tsne.fit_transform(df_top_numeric)
-        tsne_df = pd.DataFrame(tsne_results, columns=['D1', 'D2'], index=df_top_numeric.index)
-    else:
-        print(f"Skipping PCA for {unsanitised_top_name}: Insufficient data. Shape: {df_top_numeric.shape}")
-        continue
+    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=n_iter, random_state=random_state)
+    tsne_results = tsne.fit_transform(df_class_numeric)
+    tsne_df = pd.DataFrame(tsne_results, columns=['D1', 'D2'], index=df_class_numeric.index)
 
-    tsne_df['super_description'] = df_top_processed.loc[df_top_numeric.index, 'super_description']
-    tsne_df['is_top_archetype'] = df_top_processed.loc[df_top_numeric.index, 'is_top_archetype']
-
-    print(f"\tHomologous Superfamilies:", ", ".join(tsne_df['super_description'].unique()), "\n")
-
-    # ---------------------------------------------------------------------------------------------------
+    tsne_df['arch_description'] = df_class_processed.loc[df_class_numeric.index, 'arch_description']
+    tsne_df['is_arch_archetype'] = df_class_processed.loc[df_class_numeric.index, 'is_arch_archetype']
+    
+    print(f"\tArchitectures:", ", ".join(tsne_df['arch_description'].unique()), "\n")
         
     # Plotting
     plt.figure(figsize=(10, 10))
     
     # Plot non-archetypal structures
     sns.scatterplot(
-        data=tsne_df[~tsne_df['is_top_archetype']],
+        data=tsne_df[~tsne_df['is_arch_archetype']],
         x='D1', y='D2',
-        hue='super_description',
+        hue='arch_description',
         palette="Spectral",
         marker='o',
         s=50,
@@ -321,9 +311,9 @@ for top_name in df_processed['top_description'].unique():
 
     # Archetypal structures
     sns.scatterplot(
-        data=tsne_df[tsne_df['is_top_archetype']],
+        data=tsne_df[tsne_df['is_arch_archetype']],
         x='D1', y='D2',
-        hue='super_description',
+        hue='arch_description',
         palette="Spectral",        
         marker='o',
         s=50,
@@ -334,29 +324,29 @@ for top_name in df_processed['top_description'].unique():
 
     legend = plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0, fontsize='small')
     legend.get_frame().set_alpha(0.1)
-    plt.title(f't-SNE for {unsanitised_top_name} (Topology) by Homologous Superfamily')
+    plt.title(f't-SNE for {class_name} (Class) by Architecture')
     plt.xlabel('D1')
     plt.ylabel('D2')
 
-    super_counts = df_top_processed['super_description'].value_counts()
-    print(f"\tHomologous Superfamily counts:")
-    for super, count in super_counts.items():
-        print(f"\t\t- {super}: {count}")
+    arch_counts = df_class_processed['arch_description'].value_counts()
+    print(f"\tArchitecture counts:")
+    for arch, count in arch_counts.items():
+        print(f"\t\t- {arch}: {count}")
 
     print(f"\n\tPerplexity: {tsne.perplexity}, Learning Rate: {tsne.learning_rate}, Iterations: {tsne.n_iter}\n")
         
-    top_save_folder = os.path.join(base_save_folder, "by_top", f"top_{top_name.replace(' ', '_')}")
-    if not os.path.exists(top_save_folder):
-        os.makedirs(top_save_folder)
+    class_save_folder = os.path.join(base_save_folder, "by_class", f"class_{class_name.replace(' ', '_')}")
+    if not os.path.exists(class_save_folder):
+        os.makedirs(class_save_folder)
     
-    plt.savefig(os.path.join(top_save_folder, f"{top_name.replace(' ', '_')}_tsne.png"), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(class_save_folder, f"{class_name.replace(' ', '_')}_tsne.png"), dpi=300, bbox_inches='tight')
     plt.close()
     
-    print(f"\tTopology number of structures: {len(tsne_df)}", "\n")
-    print(f"\tAnalysis completed for {unsanitised_top_name}.\n")
+    print(f"\tClass number of structures: {len(tsne_df)}", "\n")
+    print(f"\tAnalysis completed for {class_name}.\n")
 
 print("--------------------------------\n")
-print(f"\tAnalysis completed for Topologies.\n")
+print(f"\tAnalysis completed for Classes.\n")
 sys.stdout = original_stdout
 
 print("All t-SNE complete")

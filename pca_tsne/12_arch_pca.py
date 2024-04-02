@@ -1,4 +1,5 @@
-#T-SNE by ARCHITECTURE
+# PCA by ARCHITECTURE
+# ---------------------------------------------------------------------------------------------------
 
 import pandas as pd
 import numpy as np
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 import seaborn as sns
 import textwrap
 import sys
@@ -94,12 +95,12 @@ class Logger(object):
     def flush(self):
         pass
 
-path_to_log_file = os.path.join(base_save_folder, "by_arch", "top_log_tsne.txt")
+path_to_log_file = os.path.join(base_save_folder, "by_arch", "arch_log_pca.txt")
 original_stdout = sys.stdout
 sys.stdout = Logger(path_to_log_file)
 
 print("--------------------------------\n")
-print("----- t-SNE by Topology ----\n")
+print("----- PCA by ARCHITECTURE ------\n")
 
 # ---------------------------------------------------------------------------------------------------
 # Add the architecture name to df
@@ -261,106 +262,122 @@ df_processed = process_data(df_labelled, normalise_columns, destress_columns)
 print(f"Total number of processed structures: {len(df_processed)}\n")
 
 # ---------------------------------------------------------------------------------------------------
-# TSNE TOPOLOGY by HOMOLOGOUS SUPERFAMILY
+# PCA ARCHITECTURE by TOPOLOGY
 
-n_components = 2 
-perplexity = 4
-learning_rate = 800
-n_iter = 3000
-random_state = 42
-
-for top_name in df_processed['top_description'].unique():
-    df_top_processed = df_processed[df_processed['top_description'] == top_name]
+for arch_name in df_processed['arch_description'].unique():
+    df_arch_processed = df_processed[df_processed['arch_description'] == arch_name]
 
     print("--------------------------------\n")
-    print(f"{top_name}:\n")
-    if df_top_processed.shape[0] <= perplexity:
-        print(f"\tNot enough data for t-SNE on {top_name}. Skipping...")
-        continue
+    print(f"{arch_name}:\n")
     print("--------------------------------\n")
     
-    unsanitised_top_name = top_name
-    top_name = top_name.replace(' ', '_').replace('/', '_')
+    unsanitised_arch_name = arch_name
+    arch_name = arch_name.replace(' ', '_').replace('/', '_')
 
-    top_save_folder = os.path.join(base_save_folder, "by_top", f"top_{top_name.replace(' ', '_')}")
-    if not os.path.exists(top_save_folder):
-        os.makedirs(top_save_folder)
+    # Ensure the directory for saving plots exists
+    arch_save_folder = os.path.join(base_save_folder, "by_arch", f"arch_{arch_name.replace(' ', '_')}")
+    if not os.path.exists(arch_save_folder):
+        os.makedirs(arch_save_folder)
 
-    numeric_destress_columns = [col for col in destress_columns if col in df_top_processed.columns and np.issubdtype(df_top_processed[col].dtype, np.number)]
-    df_top_numeric = df_top_processed[numeric_destress_columns].dropna()
+    # Select only destress columns that are numeric
+    numeric_destress_columns = [col for col in destress_columns if col in df_arch_processed.columns and np.issubdtype(df_arch_processed[col].dtype, np.number)]
+    df_arch_numeric = df_arch_processed[numeric_destress_columns].dropna()
 
-    # t-SNE
-    if df_top_numeric.shape[0] > 1 and df_top_numeric.shape[1] > 1:
-        tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=n_iter, random_state=random_state)
-        tsne_results = tsne.fit_transform(df_top_numeric)
-        tsne_df = pd.DataFrame(tsne_results, columns=['D1', 'D2'], index=df_top_numeric.index)
+    # Perform PCA
+    if df_arch_numeric.shape[0] > 1 and df_arch_numeric.shape[1] > 1:
+        pca = PCA(n_components=2)
+        principal_components = pca.fit_transform(df_arch_numeric)
+        pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'], index=df_arch_numeric.index)
     else:
-        print(f"Skipping PCA for {unsanitised_top_name}: Insufficient data. Shape: {df_top_numeric.shape}")
+        print(f"Skipping PCA for {unsanitised_arch_name}: Insufficient data. Shape: {df_arch_numeric.shape}")
         continue
 
-    tsne_df['super_description'] = df_top_processed.loc[df_top_numeric.index, 'super_description']
-    tsne_df['is_top_archetype'] = df_top_processed.loc[df_top_numeric.index, 'is_top_archetype']
+    # Add topology descriptions for plotting
+    pca_df['top_description'] = df_arch_processed.loc[df_arch_numeric.index, 'top_description']
+    pca_df['is_top_archetype'] = df_arch_processed.loc[df_arch_numeric.index, 'is_top_archetype']
 
-    print(f"\tHomologous Superfamilies:", ", ".join(tsne_df['super_description'].unique()), "\n")
+    print(f"\tTopologies:", ", ".join(pca_df['top_description'].unique()), "\n")
+
+    explained_variance = pca.explained_variance_ratio_ * 100
 
     # ---------------------------------------------------------------------------------------------------
-        
-    # Plotting
+    # figure
+    num_unique_topologies = len(pca_df['top_description'].unique())
+    color_indices = np.linspace(0, 1, num_unique_topologies)
+    spectral_colors = plt.cm.Spectral(color_indices)
+
+    # Mapping each topology to a color
+    colour_map = dict(zip(pca_df['top_description'].unique(), spectral_colors))
+
     plt.figure(figsize=(10, 10))
-    
+
     # Plot non-archetypal structures
     sns.scatterplot(
-        data=tsne_df[~tsne_df['is_top_archetype']],
-        x='D1', y='D2',
-        hue='super_description',
-        palette="Spectral",
+        x='PC1', y='PC2',
+        data=pca_df[~pca_df['is_top_archetype']],
+        hue='top_description',
+        palette=colour_map,
         marker='o',
         s=50,
         alpha=0.8,
     )
-
     # Archetypal structures
     sns.scatterplot(
-        data=tsne_df[tsne_df['is_top_archetype']],
-        x='D1', y='D2',
-        hue='super_description',
-        palette="Spectral",        
+        data=pca_df[pca_df['is_top_archetype']],
+        x='PC1', y='PC2',
+        hue='top_description',
+        palette=colour_map,        
         marker='o',
         s=50,
         edgecolor='black',
         linewidth=2,
         legend=False
     )
-
+    
     legend = plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0, fontsize='small')
     legend.get_frame().set_alpha(0.1)
-    plt.title(f't-SNE for {unsanitised_top_name} (Topology) by Homologous Superfamily')
-    plt.xlabel('D1')
-    plt.ylabel('D2')
+    plt.title(f'PCA for {unsanitised_arch_name} (Architecture) by Topology')
+    plt.xlabel(f'PC1: {explained_variance[0]:.2f}%')
+    plt.ylabel(f' PC2: {explained_variance[1]:.2f}%')
 
-    super_counts = df_top_processed['super_description'].value_counts()
-    print(f"\tHomologous Superfamily counts:")
-    for super, count in super_counts.items():
-        print(f"\t\t- {super}: {count}")
 
-    print(f"\n\tPerplexity: {tsne.perplexity}, Learning Rate: {tsne.learning_rate}, Iterations: {tsne.n_iter}\n")
-        
-    top_save_folder = os.path.join(base_save_folder, "by_top", f"top_{top_name.replace(' ', '_')}")
-    if not os.path.exists(top_save_folder):
-        os.makedirs(top_save_folder)
-    
-    plt.savefig(os.path.join(top_save_folder, f"{top_name.replace(' ', '_')}_tsne.png"), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(arch_save_folder, f"{arch_name.replace(' ', '_')}_pca.png"), dpi = 300, bbox_inches='tight')
     plt.close()
-    
-    print(f"\tTopology number of structures: {len(tsne_df)}", "\n")
-    print(f"\tAnalysis completed for {unsanitised_top_name}.\n")
+
+    top_counts = df_arch_processed['top_description'].value_counts()
+    print(f"\tTopology counts:\n")
+    for top, count in top_counts.items():
+        print(f"\t\t- {top}: {count}")
+    print("\n")    
+
+    # Component loading plot
+    pca_feature_names = df_arch_numeric.columns.tolist()
+
+    # When plotting component loadings:
+    for i in range(pca.n_components_):
+        plt.figure(figsize=(10, 6))
+        component_loadings = pca.components_[i]
+        sorted_indices = np.argsort(np.abs(component_loadings))[::-1]
+        sorted_loadings = component_loadings[sorted_indices]
+        sorted_feature_names = np.array(pca_feature_names)[sorted_indices]
+
+        plt.bar(x=range(len(sorted_feature_names)), height=sorted_loadings)
+        plt.xticks(ticks=range(len(sorted_feature_names)), labels=sorted_feature_names, rotation=90)
+        plt.title(f'PCA Component {i+1} Loadings for {arch_name}')
+        plt.xlabel('Features')
+        plt.ylabel('Loading Value')
+        plt.tight_layout()
+        plt.savefig(os.path.join(arch_save_folder, f'pc_{i+1}_loadings_{arch_name}.png'))
+        plt.close()
+
+    print(f"\tArchitecture number of structures: {len(pca_df)}", "\n")
+    print("\tVariance explained by each component:", explained_variance, "\n")
+    print(f"\tAnalysis completed for {unsanitised_arch_name}.\n")
 
 print("--------------------------------\n")
-print(f"\tAnalysis completed for Topologies.\n")
+print(f"\tAnalysis completed for Architectures.\n")
 sys.stdout = original_stdout
 
-print("All t-SNE complete")
+print("All PCA completed.")
 
 # ---------------------------------------------------------------------------------------------------
-
-    
