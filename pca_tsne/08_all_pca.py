@@ -1,32 +1,36 @@
+# ALL PCA
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
+import plotly.graph_objects as go
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import PCA
 import seaborn as sns
-import os
 import json
-import warnings
-
-warnings.filterwarnings('ignore', category=FutureWarning)
+import sys
+import os
 
 # ---------------------------------------------------------------------------------------------------
-# Load the dataset
+# LOAD DATA
 
-path = "/Volumes/dax-hd/project-data/search-files/merged-data.csv"
+feature_data_path = "/Volumes/dax-hd/project-data/search-files/merged-data.csv"
 cath_dict_path = "/Volumes/dax-hd/project-data/search-files/cath-archetype-dict.txt"
-base_save_folder = "/Volumes/dax-hd/project-data/images/figs/"
+uniprot = "/Volumes/dax-hd/project-data/search-files/uniprot-data.csv"
+base_save_folder = "/Volumes/dax-hd/project-data/final-figures/"
 
-df = pd.read_csv(path)
-original_columns = set(df.columns)
-
-with open(cath_dict_path, 'r') as file:
-    cath_dict = json.load(file)
 if not os.path.exists(base_save_folder):
     os.makedirs(base_save_folder)
 
+save_folder = os.path.join(base_save_folder)
+if not os.path.exists(save_folder):
+    os.makedirs(save_folder)
+
+font = 'Andale Mono'
+
 # ---------------------------------------------------------------------------------------------------
+# COLUMN RESTRICTIONS
 
 destress_columns = [
     "hydrophobic_fitness",
@@ -70,89 +74,6 @@ destress_columns = [
     "aggrescan3d_max_value"
     ]
 
-# ---------------------------------------------------------------------------------------------------
-# Add the architecture name to df
-
-def add_class_name(df, cath_dict):
-    def get_class_name(row):
-        class_num = str(row['Class number'])
-        try:
-            description = cath_dict[class_num]['description']
-            return description
-        except KeyError:
-            return "Unknown"
-    
-    df['class_description'] = df.apply(get_class_name, axis=1)
-    return df
-
-df = add_class_name(df, cath_dict)
-
-# ---------------------------------------------------------------------------------------------------
-# Removing correlating features
-
-def remove_highly_correlated_features(df, tolerance, columns):
-    if columns is None:
-        columns = df.columns
-
-    valid_columns = [col for col in columns if col in df.columns and np.issubdtype(df[col].dtype, np.number)]
-    df_selected = df[valid_columns].copy()
-
-    scaler = StandardScaler()
-    scaled_features = scaler.fit_transform(df_selected)
-    df_scaled = pd.DataFrame(scaled_features, columns=valid_columns)
-
-    corr_matrix = df_scaled.corr(method='spearman').abs()
-    dropped_features = []
-
-    while True:
-        upper_tri = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-        to_drop = [column for column in upper_tri.columns if any(upper_tri[column] > tolerance)]
-        
-        if not to_drop:
-            break
-        
-        feature_to_remove = to_drop[0]
-        df_selected.drop(columns=feature_to_remove, inplace=True)
-        df_scaled.drop(columns=feature_to_remove, inplace=True)
-        dropped_features.append(feature_to_remove)
-        corr_matrix = df_scaled.corr(method='spearman').abs()
-
-    return df.drop(columns=dropped_features), dropped_features
-
-# ---------------------------------------------------------------------------------------------------
-
-def filter_for_archetypes(df, cath_dict):
-    archetype_ids = []
-    for _, row in df.iterrows():
-        class_num = str(row['Class number'])
-        arch_num = str(row['Architecture number'])
-        top_num = str(row['Topology number'])
-        try:
-            protein_id = cath_dict[class_num][arch_num][top_num]['protein_id']
-            if protein_id[:4] in row['design_name']:
-                archetype_ids.append(row['design_name'])
-        except KeyError:
-            continue
-    return df[df['design_name'].isin(archetype_ids)]
-
-df = filter_for_archetypes(df, cath_dict)
-
-# ---------------------------------------------------------------------------------------------------
-# Remove missing data
-
-threshold = 0.2
-missing_percentage = df.isnull().sum() / len(df)
-columns_to_drop = missing_percentage[missing_percentage > threshold].index
-df = df.drop(columns=columns_to_drop, axis=1)
-df = df.dropna()
-
-cleaned_columns = set(df.columns)
-dropped_columns = list(original_columns - cleaned_columns)
-print("Dropped columns (Missing Values):", dropped_columns)
-
-# ---------------------------------------------------------------------------------------------------
-# Normalise Data
-
 normalise_columns = [
     "num_residues", "hydrophobic_fitness", "budeff_total", "budeff_steric", "budeff_desolvation", "budeff_charge",
     "evoef2_total", "evoef2_ref_total", "evoef2_intraR_total", "evoef2_interS_total", "evoef2_interD_total",
@@ -162,106 +83,539 @@ normalise_columns = [
     "rosetta_p_aa_pp", "rosetta_fa_dun", "rosetta_omega", "rosetta_pro_close", "rosetta_yhh_planarity"
 ]
 
-if 'num_residues' in df.columns:
-    for field in normalise_columns:
-        if field in df.columns:
-            df[field] = df[field] / df['num_residues']
+# ---------------------------------------------------------------------------------------------------
+# LOGGER
+
+class Logger(object):
+    def __init__(self, filename="Default.log"):
+        self.terminal = sys.stdout
+        self.log = open(filename, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        pass
+path_to_log_file = os.path.join(base_save_folder, "log_pca.txt")
+original_stdout = sys.stdout
+sys.stdout = Logger(path_to_log_file)
 
 # ---------------------------------------------------------------------------------------------------
-# Drop mass and residue number, removing highly correlated features, and scaling
-            
-df = df.drop([
-    'mass', 'num_residues'
-    ], axis=1)
+# ADDING CATH AND ARCHETYPE TAGS
 
-df, dropped_features = remove_highly_correlated_features(df, tolerance=0.6, columns=destress_columns)
+def add_cath_data(df, path):
+    with open(path, 'r') as file:
+        cath_dict = json.load(file)
+    def get_descriptions(row):
+        class_num = str(row['Class number'])
+        arch_num = str(row['Architecture number'])
+        top_num = str(row['Topology number'])
+        super_num = str(row['Homologous superfamily number'])
 
-corr_columns = set(df.columns)
-dropped_columns_corr = list(cleaned_columns - corr_columns)
-print("Dropped columns (Correlation):", dropped_columns_corr)
+        class_desc = cath_dict.get(class_num, {}).get('description', "Unknown")
+        arch_desc = cath_dict.get(class_num, {}).get(arch_num, {}).get('description', "Unknown")
+        top_desc = cath_dict.get(class_num, {}).get(arch_num, {}).get(top_num, {}).get('description', "Unknown")
+        super_desc = cath_dict.get(class_num, {}).get(arch_num, {}).get(top_num, {}).get(super_num, {}).get('description', "Unknown")
 
-nunique = df.apply(pd.Series.nunique)
-cols_to_drop = nunique[nunique == 1].index
-df = df.drop(cols_to_drop, axis=1)
+        return pd.Series([class_desc, arch_desc, top_desc, super_desc])
 
-nuq_columns = set(df.columns)
-dropped_columns_nuq = list(corr_columns - nuq_columns)
-print("Dropped columns (Little/no Variance):", dropped_columns_nuq)
-
-df = df.drop([
-    'evoef2_interD_total', 'aggrescan3d_min_value', 'aggrescan3d_max_value',
-    'rosetta_fa_rep', 'rosetta_dslf_fa13', 'rosetta_omega', 'rosetta_yhh_planarity'
-    ], axis=1)
-
-pca_columns = [col for col in destress_columns if col in df.columns]
-df_pca_ready = df[pca_columns].dropna()
-
-scaler = StandardScaler()
-df_scaled = scaler.fit_transform(df_pca_ready)
-
-# ---------------------------------------------------------------------------------------------------
-# Plotting
-
-pca = PCA(n_components=2)
-principal_components = pca.fit_transform(df_scaled)
-pca_df = pd.DataFrame(data=principal_components, columns=[f'PC{i+1}' for i in range(pca.n_components_)])
-
-explained_variance = pca.explained_variance_ratio_ * 100
-
-save_folder = os.path.join(base_save_folder)
-if not os.path.exists(save_folder):
-    os.makedirs(save_folder)
-
-print(f"Total number of datapoints for class: {len(pca_df)}")
-
-# ---------------------------------------------------------------------------------------------------
-
-pca_df['class_description'] = df['class_description'].values
-unique_class = pca_df['class_description'].unique()
-class_to_id = {class_: i % 3 for i, class_ in enumerate(unique_class)}
-
-palette = sns.color_palette(['#648FFF', '#785EF0', '#DC267F', '#FE6100', '#FFB000'])
-
-plt.figure(figsize=(10, 10))
-ax = plt.subplot(111, aspect='equal')
-
-sns.scatterplot(
-    x='PC1', y='PC2',
-    hue='class_description',
-    data=pca_df,
-    palette=palette,
-    s=100 
-)
-
-plt.title(f'PCA for Class')
-plt.xlabel(f'PC1: {explained_variance[0]:.2f}%')
-plt.ylabel(f' PC2: {explained_variance[1]:.2f}%')
-plt.figtext(0.5, 0.01, f"Features used: {pca_columns}", ha="center", fontsize=10)
-plt.savefig(os.path.join(save_folder, f"class-pca.png"), bbox_inches='tight')
-plt.close()
-
-# Component loading plot
-for i in range(pca.n_components_):
-    plt.figure(figsize=(10, 6))
-    component_loadings = pca.components_[i]
-    indices = np.argsort(abs(component_loadings))[::-1]
+    descriptions = df.apply(get_descriptions, axis=1, result_type='expand')
+    df[['class_description', 'arch_description', 'top_description', 'super_description']] = descriptions
     
-    # Ensure feature names match the PCA input
-    feature_names = np.array(pca_columns)[indices]
+    df['is_class_archetype'] = False
+    df['is_arch_archetype'] = False
+    df['is_top_archetype'] = False
+    df['is_super_archetype'] = False
+
+    for index, row in df.iterrows():
+        class_num, arch_num, top_num, super_num = str(row['Class number']), str(row['Architecture number']), str(row['Topology number']), str(row['Homologous superfamily number'])
+        
+        class_archetype_protein_id = cath_dict.get(class_num, {}).get('protein_id', "")
+        if class_archetype_protein_id and class_archetype_protein_id[:4] in row['design_name']:
+            df.at[index, 'is_class_archetype'] = True
+        
+        arch_archetype_protein_id = cath_dict.get(class_num, {}).get(arch_num, {}).get('protein_id', "")
+        if arch_archetype_protein_id and arch_archetype_protein_id[:4] in row['design_name']:
+            df.at[index, 'is_arch_archetype'] = True
+        
+        top_archetype_protein_id = cath_dict.get(class_num, {}).get(arch_num, {}).get(top_num, {}).get('protein_id', "")
+        if top_archetype_protein_id and top_archetype_protein_id[:4] in row['design_name']:
+            df.at[index, 'is_top_archetype'] = True
+
+        super_archetype_protein_id = cath_dict.get(class_num, {}).get(arch_num, {}).get(top_num, {}).get(super_num, {}).get('protein_id', "")
+        if super_archetype_protein_id and super_archetype_protein_id[:4] in row['design_name']:
+            df.at[index, 'is_super_archetype'] = True
+
+    return df
+
+# ---------------------------------------------------------------------------------------------------
+# ADDING PROTEIN NAME FOR SUPERFAMILY ANALYSIS
+
+def add_protein_name(df, uniprot_path):
+    uniprot_df = pd.read_csv(uniprot_path)
+    df = pd.merge(df, uniprot_df[['PDB ID', 'Protein name']], left_on='design_name', right_on='PDB ID', how='left')
+    df['Protein name'] = df['Protein name'].fillna('Unknown')
+    df.drop(columns='PDB ID', inplace=True)
+    return df
+
+# ---------------------------------------------------------------------------------------------------
+# DATA PROCESSING
+
+def process_data(df, normalise_columns, destress_columns, tolerance=0.6, variance_threshold = 0.05):
+    print("---------PREPROCESSING----------\n")
+    non_destress_columns = df.drop(columns=destress_columns, errors='ignore')
+    valid_destress_columns = [col for col in destress_columns if col in df.columns]
+
+    threshold = 0.15
+    missing_percentage = df[valid_destress_columns].isnull().sum() / len(df)
+    columns_to_drop_due_to_missing = []
+
+    print("\tDropping columns due to missing values > {:.0f}%:".format(threshold * 100))
+    for col in valid_destress_columns:
+        percentage = missing_percentage[col] * 100
+        if percentage > threshold * 100:
+            print(f"\t\t- {col}: {percentage:.2f}%")
+            columns_to_drop_due_to_missing.append(col)
+
+    df = df.drop(columns=columns_to_drop_due_to_missing)
+    valid_destress_columns = [col for col in valid_destress_columns if col not in columns_to_drop_due_to_missing]
+
+    if 'num_residues' in df.columns:
+        for feature in [col for col in normalise_columns if col in valid_destress_columns]:
+            df[feature] = df[feature] / df['num_residues']
     
-    plt.bar(range(len(component_loadings)), component_loadings[indices])
-    plt.xticks(range(len(component_loadings)), feature_names, rotation=90)
-    plt.title(f'PCA Component {i+1} Loadings')
-    plt.ylabel('Loading Value')
+    print("\n\tDropping columns explicitly: \n\t\t- mass\n\t\t- num_residues\n")
+    df = df.drop(['mass', 'num_residues'], axis=1, errors='ignore')
+    valid_destress_columns = [col for col in valid_destress_columns if col not in ['mass', 'num_residues']]
+
+    corr_matrix_before = df[valid_destress_columns].corr()
+
+    plt.figure(figsize=(14, 12))
+    sns.heatmap(corr_matrix_before, cmap='viridis', vmin=-1, vmax=1, annot=False, fmt=".2f", annot_kws={"size": 10})
+    plt.title("Correlation Matrix Before Removing Highly Correlated Features")
     plt.tight_layout()
-    feature_contribution_path = os.path.join(save_folder, f'pca_component_{i+1}_loadings.png')
-    plt.savefig(feature_contribution_path)
+    filename = "correlation_matrix_before.png"
+    file_path = os.path.join(base_save_folder, filename)
+    plt.savefig(file_path, bbox_inches='tight', dpi=300)
     plt.close()
 
-print("Variance explained by each component:")
-print("Columns used:", pca_columns)
-print("PCA explained variance:", pca.explained_variance_ratio_)
+    dropped_features = []
+    while True:
+        corr_matrix = df[valid_destress_columns].corr().abs()
+        upper_tri = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+        to_drop = [column for column in upper_tri.columns if any(upper_tri[column] > tolerance)]
+        if not to_drop:
+            break
+        feature_to_remove = to_drop[0]
+        df = df.drop(columns=[feature_to_remove], errors='ignore')
+        valid_destress_columns.remove(feature_to_remove)
+        dropped_features.append(feature_to_remove)
+    print(f"\tDropped features due to high correlation >{tolerance*100:.2f}%:\n\t\t- " + "\n\t\t- ".join(dropped_features) + "\n")
 
-print("PCA completed.")
+    corr_matrix_after = df[valid_destress_columns].corr()
+
+    plt.figure(figsize=(14, 12))
+    sns.heatmap(corr_matrix_after, cmap='viridis', vmin=-1, vmax=1, annot=False, fmt=".2f", annot_kws={"size": 10})
+    plt.title("Correlation Matrix After Removing Highly Correlated Features")
+    plt.tight_layout()
+    filename = "correlation_matrix_after.png"
+    file_path = os.path.join(base_save_folder, filename)
+    plt.savefig(file_path, bbox_inches='tight', dpi=300)
+    plt.close()
+
+    original_columns_set = set(valid_destress_columns)
+    selector = VarianceThreshold(threshold=variance_threshold)
+    df_filtered = selector.fit_transform(df[valid_destress_columns])
+    columns_mask = selector.get_support(indices=True)
+    valid_destress_columns = [valid_destress_columns[i] for i in columns_mask]
+    df = df[valid_destress_columns + list(non_destress_columns.columns)]
+    dropped_columns_due_to_variance = original_columns_set - set(valid_destress_columns)
+    if dropped_columns_due_to_variance:
+        print(f"\tDropped features due to little/no variance: " + "\n\t\t- " + "\n\t\t- ".join(dropped_columns_due_to_variance) + "\n")
+    else:
+        print("\tNo features dropped due to little/no variance.\n")
+
+    dropped_features = ['rosetta_pro_close', 'rosetta_dslf_fa13', 'rosetta_yhh_planarity', 'rosetta_omega', 'aggrescan3d_min_value', 'aggrescan3d_max_value']
+    df = df.drop(dropped_features, axis=1, errors='ignore')
+    valid_destress_columns = [col for col in valid_destress_columns if col not in dropped_features]
+    print(f"\tDropped features due to skew:\n\t\t- " + "\n\t\t- ".join(dropped_features) + "\n")
+
+    scaler = StandardScaler()
+    df_scaled = scaler.fit_transform(df[valid_destress_columns])
+    df_scaled = pd.DataFrame(df_scaled, columns=valid_destress_columns, index=df.index)
+
+    print(f"\tFeatures used:\n\t\t- " + "\n\t\t- ".join(df[valid_destress_columns].columns) + "\n")
+
+    df_processed = pd.concat([df_scaled, non_destress_columns], axis=1)
+    df_processed = df_processed.dropna()
+    print("---------PREPROCESSING----------\n")
+    return df_processed
 
 # ---------------------------------------------------------------------------------------------------
+# PCA PLOTTING
+
+def plot_pca_by_all(df):
+    save_folder = os.path.join(base_save_folder, "all")
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+
+    print("-----------PCA BY ALL-----------\n")
+    print("--(only archetypal toplogies)---\n")
+
+    unique_classes = df['class_description'].unique()
+    colors = ['#ed5054', '#3f93b4', '#e0ac24', '#fff785', '#dbcfc2', '#a8e6cf', '#dcedc1']
+    markers = ['circle', 'square', 'triangle-up', 'diamond', 'pentagon', 'star', 'cross']
+
+    numeric_destress_columns = [col for col in destress_columns if col in df.columns and np.issubdtype(df[col].dtype, np.number)]
+    df_filtered = df[df['is_top_archetype']].copy()
+    df_numeric = df_filtered[numeric_destress_columns].dropna()
+
+    try:
+        pca = PCA(n_components=2)
+        principal_components = pca.fit_transform(df_numeric)
+        pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'], index=df_numeric.index)
+
+        explained_variance = pca.explained_variance_ratio_ * 100
+
+        pca_df['class_description'] = df.loc[df_numeric.index, 'class_description']
+        pca_df['hover_text'] = df.loc[df_numeric.index, 'Protein name']
+
+        fig = go.Figure()
+
+        for i, class_description in enumerate(unique_classes):
+            class_df = pca_df[pca_df['class_description'] == class_description]
+            print(f"\tClass: {class_description}, {len(class_df)}")
+            fig.add_trace(go.Scatter(
+                x=class_df['PC1'],
+                y=class_df['PC2'],
+                mode='markers',
+                marker=dict(size=9, line=dict(width=1), symbol=markers[i % len(markers)], color=colors[i % len(colors)]),
+                name=class_description,
+                text=class_df['hover_text'],
+                hoverinfo='text'
+            ))
+
+        fig.update_layout(
+            font=dict(family=font, size=12, color="black"),
+            title='PCA for all data by class',
+            xaxis_title=(f'PC1: {explained_variance[0]:.2f}%'),
+            yaxis_title=(f'PC2: {explained_variance[1]:.2f}%'),
+            legend_title='Class Description',
+            legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
+        )
+
+        fig.write_html(os.path.join(save_folder, "all_pca.html"))
+
+        for j in range(pca.n_components_):
+            plt.figure(figsize=(10, 6))
+            component_loadings = pca.components_[j]
+            indices = np.argsort(abs(component_loadings))[::-1]
+            feature_names = np.array(numeric_destress_columns)[indices]
+            plt.bar(range(len(component_loadings)), component_loadings[indices])
+            plt.xticks(range(len(component_loadings)), feature_names, rotation=90)
+            plt.title(f'PCA Component {j+1} Loadings')
+            plt.ylabel('Loading Value')
+            plt.tight_layout()
+            feature_contribution_path = os.path.join(save_folder, f'pca_component_{j+1}_loadings.png')
+            plt.savefig(feature_contribution_path)
+            plt.close()
+
+    except Exception as e:
+        print(f"!!\tFailed to plot PCA due to error: {e}\n")
+
+    print(f"\nPCA for all - completed.\n")
+
+def plot_pca_by_class(df):
+
+    print("----------PCA BY CLASS----------\n")
+    print("-(only archetypal superfamilies)\n")
+
+    colors = ['#ed5054','#3f93b4','#e0ac24', '#fff785', '#dbcfc2', '#a8e6cf','#dcedc1',
+    '#a593e0', '#ff8b94']
+    markers = ['circle', 'square', 'triangle-up', 'diamond', 'pentagon', 
+    'star', 'cross', 'x', 'hexagon', 'hexagon2', 'octagon', 'hexagram',
+    'star-triangle-up', 'star-square', 'star-diamond', 'diamond-tall',
+    'diamond-wide', 'hourglass', 'bowtie', 'circle-cross','circle-x',
+    'square-cross', 'square-x', 'diamond-cross', 'diamond-x']
+    
+    for i, class_name in enumerate(df['class_description'].unique()):
+        save_folder = os.path.join(base_save_folder, "class", class_name.replace(' ', '_'))
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)
+
+        df_class = df[df['class_description'] == class_name].copy()
+        numeric_destress_columns = [col for col in destress_columns if col in df.columns and np.issubdtype(df[col].dtype, np.number)]
+        df_filtered = df_class[df_class['is_super_archetype']].copy()
+        df_numeric = df_filtered[numeric_destress_columns].dropna()
+
+        try:
+            pca = PCA(n_components=2)
+            principal_components = pca.fit_transform(df_numeric)
+            pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'], index=df_numeric.index)
+
+            explained_variance = pca.explained_variance_ratio_ * 100
+
+            pca_df['arch_description'] = df_class.loc[df_numeric.index, 'arch_description']
+            pca_df['is_super_archetype'] = df_class.loc[df_numeric.index, 'is_super_archetype']
+            pca_df['hover_text'] = df_class.loc[df_numeric.index, 'Protein name']
+            print(f"\tClass: {class_name} - {len(pca_df['arch_description'].unique())}")
+
+            fig = go.Figure()
+            for j, arch_desc in enumerate(pca_df['arch_description'].unique()):
+                arch_df = pca_df[pca_df['arch_description'] == arch_desc]
+                fig.add_trace(go.Scatter(
+                    x=arch_df['PC1'],
+                    y=arch_df['PC2'],
+                    mode='markers',
+                    marker=dict(size=9, line=dict(width=1), symbol=markers[j % len(markers)],
+                                 color=colors[j % len(colors)]),
+                    name=arch_desc,
+                    text=arch_df['hover_text'],
+                    hoverinfo='text'
+                ))
+
+            fig.update_layout(
+                font=dict(family=font, size=12, color="black"),
+                title=f'PCA for {class_name} (Class) by Architecture',
+                xaxis_title=(f'PC1: {explained_variance[0]:.2f}%'),
+                yaxis_title=(f'PC2: {explained_variance[1]:.2f}%'),
+                legend_title='Architecture Description',
+            )
+
+            fig.write_html(os.path.join(save_folder, f"{class_name.replace(' ', '_')}_pca.html"))
+
+            for k in range(pca.n_components_):
+                plt.figure(figsize=(10, 6))
+                component_loadings = pca.components_[k]
+                indices = np.argsort(abs(component_loadings))[::-1]
+                feature_names = np.array(numeric_destress_columns)[indices]
+                plt.bar(range(len(component_loadings)), component_loadings[indices])
+                plt.xticks(range(len(component_loadings)), feature_names, rotation=90)
+                plt.title(f'PCA Component {k+1} Loadings')
+                plt.ylabel('Loading Value')
+                plt.tight_layout()
+                feature_contribution_path = os.path.join(save_folder, f'pca_component_{k+1}_loadings.png')
+                plt.savefig(feature_contribution_path)
+                plt.close()
+            
+            print(f"\tClass number of structures: {len(pca_df)}\n")
+            print("--------------------------------\n")
+
+        except Exception as e:
+            print(f"!!\tFailed to plot PCA due to error: {e}\n")
+    
+    print("PCA of Class by Architecture - completed.\n")
+
+def plot_pca_by_arch(df):
+    
+    print("-------PCA BY ARCHITECTURE------\n")
+    print("--------------------------------\n")
+
+    colors = ['#ed5054','#3f93b4','#e0ac24', '#fff785', '#dbcfc2', '#a8e6cf','#dcedc1',
+    '#a593e0', '#ff8b94']
+    markers = ['circle', 'square', 'triangle-up', 'diamond', 'pentagon', 
+    'star', 'cross', 'x', 'hexagon', 'hexagon2', 'octagon', 'hexagram',
+    'star-triangle-up', 'star-square', 'star-diamond', 'diamond-tall',
+    'diamond-wide', 'hourglass', 'bowtie', 'circle-cross','circle-x',
+    'square-cross', 'square-x', 'diamond-cross', 'diamond-x']
+    
+    for i, arch_name in enumerate(df['arch_description'].unique()):
+        print(f"\n\tArchitecture: {arch_name} - {len(df['arch_description'].unique())}")
+
+        unsanitised_arch_name = arch_name
+        arch_name = arch_name.replace(' ', '_').replace('/', '_')
+
+        save_folder = os.path.join(base_save_folder, "arch", arch_name.replace(' ', '_'))
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)
+
+        df_arch = df[df['arch_description'] == unsanitised_arch_name].copy()
+        numeric_destress_columns = [col for col in destress_columns if col in df.columns and np.issubdtype(df[col].dtype, np.number)]
+        df_numeric = df_arch[numeric_destress_columns].dropna()
+
+        try:
+            pca = PCA(n_components=2)
+            principal_components = pca.fit_transform(df_numeric)
+            pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'], index=df_numeric.index)
+
+            explained_variance = pca.explained_variance_ratio_ * 100
+
+            pca_df['top_description'] = df_arch.loc[df_numeric.index, 'top_description']
+            pca_df['hover_text'] = df_arch.loc[df_numeric.index, 'Protein name']
+
+            fig = go.Figure()
+            for j, top_desc in enumerate(pca_df['top_description'].unique()):
+                top_df = pca_df[pca_df['top_description'] == top_desc]
+                fig.add_trace(go.Scatter(
+                    x=top_df['PC1'],
+                    y=top_df['PC2'],
+                    mode='markers',
+                    marker=dict(size=9, line=dict(width=1), symbol=markers[j % len(markers)],
+                                 color=colors[j % len(colors)]),
+                    name=top_desc,
+                    text=top_df['hover_text'],
+                    hoverinfo='text'
+                ))
+
+            fig.update_layout(
+                font=dict(family=font, size=12, color="black"),
+                title=f'PCA for {unsanitised_arch_name} (Architecture) by Topology',
+                xaxis_title=(f'PC1: {explained_variance[0]:.2f}%'),
+                yaxis_title=(f'PC2: {explained_variance[1]:.2f}%'),
+                legend_title='Topology Description',
+            )
+
+            fig.write_html(os.path.join(save_folder, f"{arch_name.replace(' ', '_')}_pca.html"))
+
+            for k in range(pca.n_components_):
+                plt.figure(figsize=(10, 6))
+                component_loadings = pca.components_[k]
+                indices = np.argsort(abs(component_loadings))[::-1]
+                feature_names = np.array(numeric_destress_columns)[indices]
+                plt.bar(range(len(component_loadings)), component_loadings[indices])
+                plt.xticks(range(len(component_loadings)), feature_names, rotation=90)
+                plt.title(f'PCA Component {k+1} Loadings')
+                plt.ylabel('Loading Value')
+                plt.tight_layout()
+                feature_contribution_path = os.path.join(save_folder, f'pca_component_{k+1}_loadings.png')
+                plt.savefig(feature_contribution_path)
+                plt.close()
+            
+            print(f"\tArchitecture number of structures: {len(pca_df)}\n")
+            print("--------------------------------\n")
+            if 'top_description' in pca_df.columns and not pca_df['top_description'].isnull().all():    
+                topology_counts = pca_df['top_description'].value_counts()
+                for topology, count in topology_counts.items():
+                    print(f"\t\t{topology} - {count}")
+            else:
+                print("!!\t\tNo topology data available.")  
+
+        except Exception as e:
+            print(f"!!\tFailed to plot PCA due to error: {e}\n")
+        
+
+    print("PCA of Architecture by Topology - completed.\n")
+
+def plot_pca_by_top(df):
+ 
+    print("-------PCA BY ARCHITECTURE------\n")
+    print("--------------------------------\n")
+
+    colors = ['#ed5054','#3f93b4','#e0ac24', '#fff785', '#dbcfc2', '#a8e6cf','#dcedc1',
+    '#a593e0', '#ff8b94']
+    markers = ['circle', 'square', 'triangle-up', 'diamond', 'pentagon', 
+    'star', 'cross', 'x', 'hexagon', 'hexagon2', 'octagon', 'hexagram',
+    'star-triangle-up', 'star-square', 'star-diamond', 'diamond-tall',
+    'diamond-wide', 'hourglass', 'bowtie', 'circle-cross','circle-x',
+    'square-cross', 'square-x', 'diamond-cross', 'diamond-x']
+    
+    for i, top_name in enumerate(df['top_description'].unique()):
+        print(f"\n\tTopology: {top_name} - {len(df['top_description'].unique())}")
+
+        unsanitised_top_name = top_name
+        top_name = top_name.replace(' ', '_').replace('/', '_')
+
+        save_folder = os.path.join(base_save_folder, "top", top_name.replace(' ', '_'))
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)
+
+        df_top = df[df['top_description'] == unsanitised_top_name].copy()
+        numeric_destress_columns = [col for col in destress_columns if col in df.columns and np.issubdtype(df[col].dtype, np.number)]
+        df_numeric = df_top[numeric_destress_columns].dropna()
+
+        try:
+            pca = PCA(n_components=2)
+            principal_components = pca.fit_transform(df_numeric)
+            pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'], index=df_numeric.index)
+
+            explained_variance = pca.explained_variance_ratio_ * 100
+
+            pca_df['super_description'] = df_top.loc[df_numeric.index, 'super_description']
+            pca_df['hover_text'] = df_top.loc[df_numeric.index, 'Protein name']
+
+            fig = go.Figure()
+            for j, super_desc in enumerate(pca_df['super_description'].unique()):
+                super_df = pca_df[pca_df['super_description'] == super_desc]
+                fig.add_trace(go.Scatter(
+                    x=super_df['PC1'],
+                    y=super_df['PC2'],
+                    mode='markers',
+                    marker=dict(size=9, line=dict(width=1), symbol=markers[j % len(markers)],
+                                 color=colors[j % len(colors)]),
+                    name=super_desc,
+                    text=super_df['hover_text'],
+                    hoverinfo='text'
+                ))
+
+            fig.update_layout(
+                font=dict(family=font, size=12, color="black"),
+                title=f'PCA for {unsanitised_top_name} (Topology) by Superfamily',
+                xaxis_title=(f'PC1: {explained_variance[0]:.2f}%'),
+                yaxis_title=(f'PC2: {explained_variance[1]:.2f}%'),
+                legend_title='Superfamily Description',
+            )
+
+            fig.write_html(os.path.join(save_folder, f"{top_name.replace(' ', '_')}_pca.html"))
+
+            for k in range(pca.n_components_):
+                plt.figure(figsize=(10, 6))
+                component_loadings = pca.components_[k]
+                indices = np.argsort(abs(component_loadings))[::-1]
+                feature_names = np.array(numeric_destress_columns)[indices]
+                plt.bar(range(len(component_loadings)), component_loadings[indices])
+                plt.xticks(range(len(component_loadings)), feature_names, rotation=90)
+                plt.title(f'PCA Component {k+1} Loadings')
+                plt.ylabel('Loading Value')
+                plt.tight_layout()
+                feature_contribution_path = os.path.join(save_folder, f'pca_component_{k+1}_loadings.png')
+                plt.savefig(feature_contribution_path)
+                plt.close()
+            
+            print(f"\tArchitecture number of structures: {len(pca_df)}\n")
+            print("--------------------------------\n")
+            if 'super_description' in pca_df.columns and not pca_df['super_description'].isnull().all():    
+                super_counts = pca_df['super_description'].value_counts()
+                for super, count in super_counts.items():
+                    print(f"\t\t{super} - {count}")
+            else:
+                print("!!\t\tNo topology data available.")  
+
+        except Exception as e:
+            print(f"!!\tFailed to plot PCA due to error: {e}\n")
+        
+
+    print("PCA of Topology by Superfamily - completed.\n")
+
+# ---------------------------------------------------------------------------------------------------
+
+def main():
+    print("--------------PCA---------------\n")
+    print("--------------------------------\n")
+
+    df = pd.read_csv(feature_data_path)
+    
+    print(f"Total number of preprocessed structures: {len(df)}\n")
+    df_processed = process_data(df, normalise_columns, destress_columns)
+    print(f"Total number of processed structures: {len(df_processed)}\n")
+    df_labelled = add_cath_data(df_processed, cath_dict_path)
+    df_named = add_protein_name(df_labelled, uniprot)
+    df_final = df_named.drop_duplicates()
+
+    plot_pca_by_all(df_final)
+    print("--------------------------------\n")
+    plot_pca_by_class(df_final)
+    print("--------------------------------\n")
+    plot_pca_by_arch(df_final)
+    print("--------------------------------\n")
+    plot_pca_by_top(df_final)
+    print("--------------------------------\n")
+
+    print("--------------------------------\n")
+    print("----------PCA COMPLETED---------\n")
+    print("--------------------------------\n")
+    sys.stdout = original_stdout
+# ---------------------------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    main()

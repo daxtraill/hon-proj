@@ -7,7 +7,6 @@ import os
 from os import path as p
 import pandas as pd
 import multiprocessing as mp
-from tqdm import tqdm
 
 # ---------------------------------------------------------------------------------------------------
 # Import directories

@@ -104,7 +104,7 @@ def main():
         uniprot_ids = scrape_uniprot_id(pdb_id)
         if uniprot_ids:
             for uniprot_id in uniprot_ids:
-                uniprot_data = fetch_uniprot_data(uniprot_id, pdb_id)  # Ensure this function accepts pdb_id as an argument
+                uniprot_data = fetch_uniprot_data(uniprot_id, pdb_id)
                 if uniprot_data:
                     all_uniprot_data.append(uniprot_data)
         else:
