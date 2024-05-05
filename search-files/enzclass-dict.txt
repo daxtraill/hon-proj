@@ -1,0 +1,1223 @@
+{
+  "1": {
+    "name": "Oxidoreductases.",
+    "1": {
+      "name": "Acting on the CH-OH group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "2": {
+      "name": "Acting on the aldehyde or oxo group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "3": {
+      "name": "Acting on the CH-CH group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or related compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "8": {
+        "name": "With a flavin as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "4": {
+      "name": "Acting on the CH-NH2 group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "5": {
+      "name": "Acting on the CH-NH group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "8": {
+        "name": "With a flavin as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "6": {
+      "name": "Acting on NADH or NADPH.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a heme protein as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "6": {
+        "name": "With a nitrogenous group as acceptor."
+      },
+      "7": {
+        "name": "With a iron-sulfur protein as acceptor."
+      },
+      "8": {
+        "name": "With a flavin as acceptor."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "7": {
+      "name": "Acting on other nitrogenous compounds as donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "6": {
+        "name": "With a nitrogenous group as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "8": {
+      "name": "Acting on a sulfur group of donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "6": {
+        "name": "With an nitrogenous group as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "9": {
+      "name": "Acting on a heme group of donors.",
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "6": {
+        "name": "With a nitrogenous group as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "10": {
+      "name": "Acting on diphenols and related substances as donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or related compound as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "11": {
+      "name": "Acting on a peroxide as acceptor.",
+      "1": {
+        "name": "Peroxidases."
+      },
+      "2": {
+        "name": "With H2O2 as acceptor, one oxygen atom of which is incorporated into the product."
+      }
+    },
+    "12": {
+      "name": "Acting on hydrogen as donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "13": {
+      "name": "Acting on single donors with incorporation of molecular oxygen (oxygenases). The oxygen incorporated need not be derived from O2.",
+      "1": {
+        "name": "With NADH or NADPH as one donor."
+      },
+      "11": {
+        "name": "With incorporation of two atoms of oxygen."
+      },
+      "12": {
+        "name": "With incorporation of one atom of oxygen (internal monooxygenases or internal mixed function oxidases)."
+      },
+      "99": {
+        "name": "Miscellaneous."
+      }
+    },
+    "14": {
+      "name": "Acting on paired donors, with incorporation or reduction of molecular oxygen. The oxygen incorporated need not be derived from O2.",
+      "1": {
+        "name": "With NADH or NADPH as one donor."
+      },
+      "2": {
+        "name": "With ascorbate as one donor."
+      },
+      "3": {
+        "name": "With reduced pteridine as one donor."
+      },
+      "11": {
+        "name": "With 2-oxoglutarate as one donor, and incorporation of one atom each of oxygen into both donors."
+      },
+      "12": {
+        "name": "With NADH or NADPH as one donor, and incorporation of two atoms of oxygen into one donor."
+      },
+      "13": {
+        "name": "With NADH or NADPH as one donor, and incorporation of one atom of oxygen."
+      },
+      "14": {
+        "name": "With reduced flavin or flavoprotein as one donor, and incorporation of one atom of oxygen."
+      },
+      "15": {
+        "name": "With reduced iron-sulfur protein as one donor, and incorporation of one atom of oxygen."
+      },
+      "16": {
+        "name": "With reduced pteridine as one donor, and incorporation of one atom of oxygen."
+      },
+      "17": {
+        "name": "With reduced ascorbate as one donor, and incorporation of one atom of oxygen."
+      },
+      "18": {
+        "name": "With another compound as one donor, and incorporation of one atom of oxygen."
+      },
+      "19": {
+        "name": "With oxidation of a pair of donors resulting in the reduction of molecular oxygen to two molecules of water."
+      },
+      "20": {
+        "name": "With 2-oxoglutarate as one donor, and the other dehydrogenated."
+      },
+      "21": {
+        "name": "With NADH or NADPH as one donor, and the other dehydrogenated."
+      },
+      "99": {
+        "name": "Miscellaneous."
+      }
+    },
+    "15": {
+      "name": "Acting on superoxide as acceptor.",
+      "1": {
+        "name": "Acting on superoxide as acceptor."
+      }
+    },
+    "16": {
+      "name": "Oxidizing metal ions.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "8": {
+        "name": "With a flavin as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other known acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "17": {
+      "name": "Acting on CH or CH2 groups.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      },
+      "7": {
+        "name": "With an iron-sulfur protein as acceptor."
+      },
+      "8": {
+        "name": "With a flavin as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "18": {
+      "name": "Acting on iron-sulfur proteins as donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With dinitrogen as acceptor."
+      },
+      "3": {
+        "name": "With H(+) as acceptor."
+      },
+      "6": {
+        "name": "With dinitrogen as acceptor."
+      },
+      "96": {
+        "name": "With other, known, acceptors."
+      },
+      "99": {
+        "name": "With H(+) as acceptor."
+      }
+    },
+    "19": {
+      "name": "Acting on reduced flavodoxin as donor.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "6": {
+        "name": "With dinitrogen as acceptor."
+      }
+    },
+    "20": {
+      "name": "Acting on phosphorus or arsenic in donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "2": {
+        "name": "With a cytochrome as acceptor."
+      },
+      "4": {
+        "name": "With disulfide as acceptor."
+      },
+      "9": {
+        "name": "With a copper protein as acceptor."
+      },
+      "98": {
+        "name": "With other, known acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "21": {
+      "name": "Catalyzing the reaction X-H + Y-H = 'X-Y'.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      },
+      "3": {
+        "name": "With oxygen as acceptor."
+      },
+      "4": {
+        "name": "With a disulfide as acceptor."
+      },
+      "98": {
+        "name": "With other, known acceptors."
+      },
+      "99": {
+        "name": "With other acceptors."
+      }
+    },
+    "22": {
+      "name": "Acting on halogen in donors.",
+      "1": {
+        "name": "With NAD(+) or NADP(+) as acceptor."
+      }
+    },
+    "23": {
+      "name": "Reducing C-O-C group as acceptor.",
+      "1": {
+        "name": "With NADH or NADPH as donor."
+      },
+      "5": {
+        "name": "With a quinone or similar compound as acceptor."
+      }
+    },
+    "97": {
+      "name": "Other oxidoreductases.",
+      "1": {
+        "name": "Other oxidoreductases."
+      }
+    },
+    "98": {
+      "name": "Enzymes using H2 as reductant.",
+      "1": {
+        "name": "Other oxidoreductases."
+      }
+    },
+    "99": {
+      "name": "Other enzymes using O2 as oxidant.",
+      "1": {
+        "name": "Hydroxylases."
+      },
+      "2": {
+        "name": "Oxygenases."
+      }
+    }
+  },
+  "2": {
+    "name": "Transferases.",
+    "1": {
+      "name": "Transferring one-carbon groups.",
+      "1": {
+        "name": "Methyltransferases."
+      },
+      "2": {
+        "name": "Hydroxymethyl-, formyl- and related transferases."
+      },
+      "3": {
+        "name": "Carboxy- and carbamoyltransferases."
+      },
+      "4": {
+        "name": "Amidinotransferases."
+      },
+      "5": {
+        "name": "Methylenetransferases."
+      }
+    },
+    "2": {
+      "name": "Transferring aldehyde or ketonic groups.",
+      "1": {
+        "name": "Transketolases and transaldolases."
+      }
+    },
+    "3": {
+      "name": "Acyltransferases.",
+      "1": {
+        "name": "Transferring groups other than amino-acyl groups."
+      },
+      "2": {
+        "name": "Aminoacyltransferases."
+      },
+      "3": {
+        "name": "Acyl groups converted into alkyl groups on transfer."
+      }
+    },
+    "4": {
+      "name": "Glycosyltransferases.",
+      "1": {
+        "name": "Hexosyltransferases."
+      },
+      "2": {
+        "name": "Pentosyltransferases."
+      },
+      "3": {
+        "name": "Sialyltransferases."
+      },
+      "99": {
+        "name": "Transferring other glycosyl groups."
+      }
+    },
+    "5": {
+      "name": "Transferring alkyl or aryl groups, other than methyl groups.",
+      "1": {
+        "name": "Transferring alkyl or aryl groups, other than methyl groups."
+      }
+    },
+    "6": {
+      "name": "Transferring nitrogenous groups.",
+      "1": {
+        "name": "Transaminases."
+      },
+      "2": {
+        "name": "Amidinotransferases."
+      },
+      "3": {
+        "name": "Oximinotransferases."
+      },
+      "99": {
+        "name": "Transferring other nitrogenous groups."
+      }
+    },
+    "7": {
+      "name": "Transferring phosphorus-containing groups.",
+      "1": {
+        "name": "Phosphotransferases with an alcohol group as acceptor."
+      },
+      "2": {
+        "name": "Phosphotransferases with a carboxy group as acceptor."
+      },
+      "3": {
+        "name": "Phosphotransferases with a nitrogenous group as acceptor."
+      },
+      "4": {
+        "name": "Phosphotransferases with a phosphate group as acceptor."
+      },
+      "5": {
+        "name": "Phosphotransferases with regeneration of donors, apparently catalyzing intramolecular transfers."
+      },
+      "6": {
+        "name": "Diphosphotransferases."
+      },
+      "7": {
+        "name": "Nucleotidyltransferases."
+      },
+      "8": {
+        "name": "Transferases for other substituted phosphate groups."
+      },
+      "9": {
+        "name": "Phosphotransferases with paired acceptors."
+      },
+      "10": {
+        "name": "Protein-tyrosine kinases."
+      },
+      "11": {
+        "name": "Protein-serine/threonine kinases."
+      },
+      "12": {
+        "name": "Dual-specificity kinases (those acting on Ser/Thr and Tyr residues)."
+      },
+      "13": {
+        "name": "Protein-histidine kinases."
+      },
+      "14": {
+        "name": "Protein-arginine kinases."
+      },
+      "99": {
+        "name": "Other protein kinases."
+      }
+    },
+    "8": {
+      "name": "Transferring sulfur-containing groups.",
+      "1": {
+        "name": "Sulfurtransferases."
+      },
+      "2": {
+        "name": "Sulfotransferases."
+      },
+      "3": {
+        "name": "CoA-transferases."
+      },
+      "4": {
+        "name": "Transferring alkylthio groups."
+      },
+      "5": {
+        "name": "Thiosulfotransferases."
+      }
+    },
+    "9": {
+      "name": "Transferring selenium-containing groups.",
+      "1": {
+        "name": "Selenotransferases."
+      }
+    },
+    "10": {
+      "name": "Transferring molybdenum- or tungsten-containing groups.",
+      "1": {
+        "name": "Molybdenumtransferases or tungstentransferases with sulfide groups as acceptors."
+      }
+    }
+  },
+  "3": {
+    "name": "Hydrolases.",
+    "1": {
+      "name": "Acting on ester bonds.",
+      "1": {
+        "name": "Carboxylic ester hydrolases."
+      },
+      "2": {
+        "name": "Thiolester hydrolases."
+      },
+      "3": {
+        "name": "Phosphoric monoester hydrolases."
+      },
+      "4": {
+        "name": "Phosphoric diester hydrolases."
+      },
+      "5": {
+        "name": "Triphosphoric monoester hydrolases."
+      },
+      "6": {
+        "name": "Sulfuric ester hydrolases."
+      },
+      "7": {
+        "name": "Diphosphoric monoester hydrolases."
+      },
+      "8": {
+        "name": "Phosphoric triester hydrolases."
+      },
+      "11": {
+        "name": "Exodeoxyribonucleases producing 5'-phosphomonoesters."
+      },
+      "12": {
+        "name": "Exodeoxyribonucleases producing 3'-phosphomonoesters."
+      },
+      "13": {
+        "name": "Exoribonucleases producing 5'-phosphomonoesters."
+      },
+      "14": {
+        "name": "Exoribonucleases producing 3'-phosphomonoesters."
+      },
+      "15": {
+        "name": "Exonucleases active with either ribo- or deoxyribonucleic acids and producing 5'-phosphomonoesters."
+      },
+      "16": {
+        "name": "Exonucleases active with either ribo- or deoxyribonucleic acids and producing 3'-phosphomonoesters."
+      },
+      "21": {
+        "name": "Endodeoxyribonucleases producing 5'-phosphomonoesters."
+      },
+      "22": {
+        "name": "Endodeoxyribonucleases producing other than 5'-phosphomonoesters."
+      },
+      "23": {
+        "name": "Site specific endodeoxyribonucleases: cleavage is sequence specific."
+      },
+      "24": {
+        "name": "Site specific endodeoxyribonucleases: cleavage is not sequence specific."
+      },
+      "25": {
+        "name": "Site-specific endodeoxyribonucleases specific for altered bases."
+      },
+      "26": {
+        "name": "Endoribonucleases producing 5'-phosphomonoesters."
+      },
+      "27": {
+        "name": "Endoribonucleases producing other than 5'-phosphomonoesters."
+      },
+      "30": {
+        "name": "Endoribonucleases active with either ribo- or deoxyribonucleic acids and producing 5'-phosphomonoesters."
+      },
+      "31": {
+        "name": "Endoribonucleases active with either ribo- or deoxyribonucleic acids and producing 3'-phosphomonoesters."
+      }
+    },
+    "2": {
+      "name": "Glycosylases.",
+      "1": {
+        "name": "Glycosidases, i.e. enzymes hydrolyzing O- and S-glycosyl compounds."
+      },
+      "2": {
+        "name": "Hydrolyzing N-glycosyl compounds."
+      },
+      "3": {
+        "name": "Hydrolyzing S-glycosyl compounds."
+      }
+    },
+    "3": {
+      "name": "Acting on ether bonds.",
+      "1": {
+        "name": "Thioether and trialkylsulfonium hydrolases."
+      },
+      "2": {
+        "name": "Ether hydrolases."
+      }
+    },
+    "4": {
+      "name": "Acting on peptide bonds (peptidases).",
+      "1": {
+        "name": "alpha-Amino-acyl-peptide hydrolases."
+      },
+      "2": {
+        "name": "Peptidyl-amino-acid hydrolases."
+      },
+      "3": {
+        "name": "Dipeptide hydrolases."
+      },
+      "4": {
+        "name": "Peptidyl peptide hydrolases."
+      },
+      "11": {
+        "name": "Aminopeptidases."
+      },
+      "12": {
+        "name": "Peptidylamino-acid hydrolases or acylamino-acid hydrolases."
+      },
+      "13": {
+        "name": "Dipeptidases."
+      },
+      "14": {
+        "name": "Dipeptidyl-peptidases and tripeptidyl-peptidases."
+      },
+      "15": {
+        "name": "Peptidyl-dipeptidases."
+      },
+      "16": {
+        "name": "Serine-type carboxypeptidases."
+      },
+      "17": {
+        "name": "Metallocarboxypeptidases."
+      },
+      "18": {
+        "name": "Cysteine-type carboxypeptidases."
+      },
+      "19": {
+        "name": "Omega peptidases."
+      },
+      "21": {
+        "name": "Serine endopeptidases."
+      },
+      "22": {
+        "name": "Cysteine endopeptidases."
+      },
+      "23": {
+        "name": "Aspartic endopeptidases."
+      },
+      "24": {
+        "name": "Metalloendopeptidases."
+      },
+      "25": {
+        "name": "Threonine endopeptidases."
+      },
+      "99": {
+        "name": "Endopeptidases of unknown catalytic mechanism."
+      }
+    },
+    "5": {
+      "name": "Acting on carbon-nitrogen bonds, other than peptide bonds.",
+      "1": {
+        "name": "In linear amides."
+      },
+      "2": {
+        "name": "In cyclic amides."
+      },
+      "3": {
+        "name": "In linear amidines."
+      },
+      "4": {
+        "name": "In cyclic amidines."
+      },
+      "5": {
+        "name": "In nitriles."
+      },
+      "99": {
+        "name": "In other compounds."
+      }
+    },
+    "6": {
+      "name": "Acting on acid anhydrides.",
+      "1": {
+        "name": "In phosphorus-containing anhydrides."
+      },
+      "2": {
+        "name": "In sulfonyl-containing anhydrides."
+      },
+      "3": {
+        "name": "Acting on acid anhydrides; catalyzing transmembrane movement of substances."
+      },
+      "4": {
+        "name": "Acting on ATP; involved in cellular and subcellular movement."
+      },
+      "5": {
+        "name": "Acting on GTP; involved in cellular and subcellular movement."
+      }
+    },
+    "7": {
+      "name": "Acting on carbon-carbon bonds.",
+      "1": {
+        "name": "In ketonic substances."
+      }
+    },
+    "8": {
+      "name": "Acting on halide bonds.",
+      "1": {
+        "name": "In C-halide compounds."
+      },
+      "2": {
+        "name": "In P-halide compounds."
+      }
+    },
+    "9": {
+      "name": "Acting on phosphorus-nitrogen bonds.",
+      "1": {
+        "name": "Acting on phosphorus-nitrogen bonds."
+      }
+    },
+    "10": {
+      "name": "Acting on sulfur-nitrogen bonds.",
+      "1": {
+        "name": "Acting on sulfur-nitrogen bonds."
+      }
+    },
+    "11": {
+      "name": "Acting on carbon-phosphorus bonds.",
+      "1": {
+        "name": "Acting on carbon-phosphorus bonds."
+      }
+    },
+    "12": {
+      "name": "Acting on sulfur-sulfur bonds.",
+      "1": {
+        "name": "Acting on sulfur-sulfur bonds."
+      }
+    },
+    "13": {
+      "name": "Acting on carbon-sulfur bonds.",
+      "1": {
+        "name": "Acting on carbon-sulfur bonds."
+      },
+      "2": {
+        "name": "Thioether and trialkylsulfonium hydrolases."
+      }
+    }
+  },
+  "4": {
+    "name": "Lyases.",
+    "1": {
+      "name": "Carbon-carbon lyases.",
+      "1": {
+        "name": "Carboxy-lyases."
+      },
+      "2": {
+        "name": "Aldehyde-lyases."
+      },
+      "3": {
+        "name": "Oxo-acid-lyases."
+      },
+      "99": {
+        "name": "Other carbon-carbon lyases."
+      }
+    },
+    "2": {
+      "name": "Carbon-oxygen lyases.",
+      "1": {
+        "name": "Hydro-lyases."
+      },
+      "2": {
+        "name": "Acting on polysaccharides."
+      },
+      "3": {
+        "name": "Acting on phosphates."
+      },
+      "99": {
+        "name": "Other carbon-oxygen lyases."
+      }
+    },
+    "3": {
+      "name": "Carbon-nitrogen lyases.",
+      "1": {
+        "name": "Ammonia-lyases."
+      },
+      "2": {
+        "name": "Lyases acting on amides, amidines, etc."
+      },
+      "3": {
+        "name": "Amine-lyases."
+      },
+      "99": {
+        "name": "Other carbon-nitrogen lyases."
+      }
+    },
+    "4": {
+      "name": "Carbon-sulfur lyases.",
+      "1": {
+        "name": "Carbon-sulfur lyases."
+      }
+    },
+    "5": {
+      "name": "Carbon-halide lyases.",
+      "1": {
+        "name": "Carbon-halide lyases."
+      }
+    },
+    "6": {
+      "name": "Phosphorus-oxygen lyases.",
+      "1": {
+        "name": "Phosphorus-oxygen lyases."
+      }
+    },
+    "7": {
+      "name": "Carbon-phosphorus lyases.",
+      "1": {
+        "name": "Carbon-phosphorus lyases."
+      }
+    },
+    "8": {
+      "name": "Nitrogen-oxygen lyases.",
+      "1": {
+        "name": "Hydro-lyases."
+      }
+    },
+    "98": {
+      "name": "ATP-independent chelatases.",
+      "1": {
+        "name": "Forming coordination complexes."
+      }
+    },
+    "99": {
+      "name": "Other lyases.",
+      "1": {
+        "name": "Other lyases."
+      }
+    }
+  },
+  "5": {
+    "name": "Isomerases.",
+    "1": {
+      "name": "Racemases and epimerases.",
+      "1": {
+        "name": "Acting on amino acids and derivatives."
+      },
+      "2": {
+        "name": "Acting on hydroxy acids and derivatives."
+      },
+      "3": {
+        "name": "Acting on carbohydrates and derivatives."
+      },
+      "99": {
+        "name": "Acting on other compounds."
+      }
+    },
+    "2": {
+      "name": "Cis-trans-isomerases.",
+      "1": {
+        "name": "Cis-trans isomerases."
+      }
+    },
+    "3": {
+      "name": "Intramolecular oxidoreductases.",
+      "1": {
+        "name": "Interconverting aldoses and ketoses."
+      },
+      "2": {
+        "name": "Interconverting keto- and enol-groups."
+      },
+      "3": {
+        "name": "Transposing C=C bonds."
+      },
+      "4": {
+        "name": "Transposing S-S bonds."
+      },
+      "99": {
+        "name": "Other intramolecular oxidoreductases."
+      }
+    },
+    "4": {
+      "name": "Intramolecular transferases.",
+      "1": {
+        "name": "Transferring acyl groups."
+      },
+      "2": {
+        "name": "Phosphotransferases (phosphomutases)."
+      },
+      "3": {
+        "name": "Transferring amino groups."
+      },
+      "4": {
+        "name": "Transferring hydroxy groups."
+      },
+      "99": {
+        "name": "Transferring other groups."
+      }
+    },
+    "5": {
+      "name": "Intramolecular lyases.",
+      "1": {
+        "name": "Intramolecular lyases."
+      }
+    },
+    "6": {
+      "name": "Isomerases altering macromolecular conformation.",
+      "1": {
+        "name": "Enzymes altering polypeptide conformation or assembly."
+      },
+      "2": {
+        "name": "Enzymes altering nucleic acid conformation."
+      }
+    },
+    "99": {
+      "name": "Other isomerases.",
+      "1": {
+        "name": "Other isomerases."
+      }
+    }
+  },
+  "6": {
+    "name": "Ligases.",
+    "1": {
+      "name": "Forming carbon-oxygen bonds.",
+      "1": {
+        "name": "Ligases forming aminoacyl-tRNA and related compounds."
+      },
+      "2": {
+        "name": "Acid--alcohol ligases (ester synthases)."
+      },
+      "3": {
+        "name": "Cyclo-ligases."
+      }
+    },
+    "2": {
+      "name": "Forming carbon-sulfur bonds.",
+      "1": {
+        "name": "Acid--thiol ligases."
+      },
+      "2": {
+        "name": "Amide--thiol ligases."
+      }
+    },
+    "3": {
+      "name": "Forming carbon-nitrogen bonds.",
+      "1": {
+        "name": "Acid--ammonia (or amine) ligases (amide synthases)."
+      },
+      "2": {
+        "name": "Acid--amino-acid ligases (peptide synthases)."
+      },
+      "3": {
+        "name": "Cyclo-ligases."
+      },
+      "4": {
+        "name": "Other carbon--nitrogen ligases."
+      },
+      "5": {
+        "name": "Carbon--nitrogen ligases with glutamine as amido-N-donor."
+      }
+    },
+    "4": {
+      "name": "Forming carbon-carbon bonds.",
+      "1": {
+        "name": "Forming carbon-carbon bonds."
+      }
+    },
+    "5": {
+      "name": "Forming phosphoric ester bonds.",
+      "1": {
+        "name": "Forming phosphoric ester bonds."
+      }
+    },
+    "6": {
+      "name": "Forming nitrogen-metal bonds.",
+      "1": {
+        "name": "Forming coordination complexes."
+      }
+    },
+    "7": {
+      "name": "Forming nitrogen-nitrogen bonds.",
+      "1": {
+        "name": "Forming diazo bonds."
+      }
+    }
+  },
+  "7": {
+    "name": "Translocases.",
+    "1": {
+      "name": "Catalysing the translocation of hydrons.",
+      "1": {
+        "name": "Hydron translocation or charge separation linked to oxidoreductase reactions."
+      },
+      "2": {
+        "name": "Hydron translocation linked to the hydrolysis of a nucleoside triphosphate."
+      },
+      "3": {
+        "name": "Hydron translocation linked to the hydrolysis of diphosphate."
+      }
+    },
+    "2": {
+      "name": "Catalysing the translocation of inorganic cations.",
+      "1": {
+        "name": "Linked to oxidoreductase reactions."
+      },
+      "2": {
+        "name": "Linked to the hydrolysis of a nucleoside triphosphate."
+      },
+      "3": {
+        "name": "Linked to the hydrolysis of diphosphate."
+      },
+      "4": {
+        "name": "Linked to decarboxylation."
+      }
+    },
+    "3": {
+      "name": "Catalysing the translocation of inorganic anions and their chelates.",
+      "2": {
+        "name": "Linked to the hydrolysis of a nucleoside triphosphate."
+      }
+    },
+    "4": {
+      "name": "Catalysing the translocation amino acids and peptides.",
+      "2": {
+        "name": "Linked to the hydrolysis of a nucleoside triphosphate."
+      }
+    },
+    "5": {
+      "name": "Catalysing the translocation carbohydrates and their derivatives.",
+      "2": {
+        "name": "Linked to the hydrolysis of a nucleoside triphosphate."
+      }
+    },
+    "6": {
+      "name": "Catalysing the translocation of other compounds.",
+      "2": {
+        "name": "Linked to the hydrolysis of a nucleoside triphosphate."
+      }
+    }
+  }
+}

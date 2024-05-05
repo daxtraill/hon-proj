@@ -1,0 +1,40 @@
+import csv
+import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
+import numpy as np
+
+possible = 1.6069380442589903e260
+native = 1e12
+
+def main():
+    counts = [possible, native]
+    
+    print(counts)
+    
+    radii = np.sqrt(np.array(counts) / np.pi)
+
+    fig, ax = plt.subplots(dpi=300)
+    ax.set_aspect('equal')
+    ax.axis('off')
+
+    for radius in sorted(radii, reverse=True):
+        circle = Circle((0, 0), radius, fill=False, edgecolor='black', linewidth=1.5)
+        ax.add_artist(circle)
+
+    colors = ['#CCCCCC', '#999999']
+    
+    x_offset = -max(radii) / 2
+
+    for i, radius in enumerate(sorted(radii, reverse=True)):
+        circle = Circle((0, 0), radius, fill=True, color=colors[i], edgecolor='black', linewidth=1.5)
+        ax.add_artist(circle)
+    max_radius = max(radii)
+    ax.set_xlim(-max_radius, max_radius)
+    ax.set_ylim(-max_radius, max_radius)
+
+    plt.savefig('circles.png', dpi=300, bbox_inches='tight')
+
+if __name__ == "__main__":
+    main()
+
+    
